@@ -1,0 +1,15 @@
+.git
+.gitignore
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.sqlite3
+media/
+staticfiles/
+.env
+.DS_Store
+Thumbs.db

@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Service
+  db:
+    image: postgres:16-alpine
+    container_name: mediconnect_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mediconnect_db}
+      POSTGRES_USER: ${DB_USER:-mediconnect_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mediconnect_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mediconnect_user} -d ${DB_NAME:-mediconnect_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis In-Memory Cache & Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: mediconnect_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. MediConnect Django Web Application
+  web:
+    build: .
+    container_name: mediconnect_web
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-mediconnect-super-secure-production-ready-key-change-in-prod-2026!#}
+      - ALLOWED_HOSTS=*
+      - USE_SQLITE=False
+      - DB_NAME=${DB_NAME:-mediconnect_db}
+      - DB_USER=${DB_USER:-mediconnect_user}
+      - DB_PASSWORD=${DB_PASSWORD:-mediconnect_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 4. Celery Asynchronous Background Task Worker
+  celery_worker:
+    build: .
+    container_name: mediconnect_celery_worker
+    restart: unless-stopped
+    command: celery -A config worker --loglevel=info --pool=solo
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-mediconnect-super-secure-production-ready-key-change-in-prod-2026!#}
+      - USE_SQLITE=False
+      - DB_NAME=${DB_NAME:-mediconnect_db}
+      - DB_USER=${DB_USER:-mediconnect_user}
+      - DB_PASSWORD=${DB_PASSWORD:-mediconnect_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 5. Celery Beat Periodic Scheduler (Appointment Reminders)
+  celery_beat:
+    build: .
+    container_name: mediconnect_celery_beat
+    restart: unless-stopped
+    command: celery -A config beat --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-mediconnect-super-secure-production-ready-key-change-in-prod-2026!#}
+      - USE_SQLITE=False
+      - DB_NAME=${DB_NAME:-mediconnect_db}
+      - DB_USER=${DB_USER:-mediconnect_user}
+      - DB_PASSWORD=${DB_PASSWORD:-mediconnect_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:

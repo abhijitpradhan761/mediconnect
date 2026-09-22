@@ -1,0 +1,20 @@
+# MediConnect - Production Requirements
+# Framework & API
+Django>=5.1.0,<6.2.0
+djangorestframework>=3.15.0
+
+# Database (PostgreSQL driver with binary wheels)
+psycopg[binary]>=3.2.0
+
+# Environment Management
+python-dotenv>=1.0.1
+
+# Asynchronous Background Processing
+celery>=5.4.0
+redis>=5.0.0
+
+# Image & Document Processing
+Pillow>=10.4.0
+
+# HTTP & AI Integration Client
+requests>=2.32.0
