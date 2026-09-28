@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Choose Account Type - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Join MediConnect</h2>
+        <p class="text-muted">Select how you want to use the healthcare management platform.</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Patient Option -->
+        <div class="col-md-5 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4">
+                <div class="mb-3 text-primary">
+                    <i class="bi bi-person-heart display-3"></i>
+                </div>
+                <h4 class="fw-bold mb-2">I am a Patient</h4>
+                <p class="text-muted small mb-4">
+                    Book appointments with verified specialists, upload health records safely, and organize consultation summaries.
+                </p>
+                <div class="mt-auto">
+                    <a href="{% url 'patient_register' %}" class="btn btn-primary w-100 py-2 fw-semibold">
+                        <i class="bi bi-arrow-right-circle me-1"></i> Register as Patient
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Option -->
+        <div class="col-md-5 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4">
+                <div class="mb-3 text-success">
+                    <i class="bi bi-person-badge-fill display-3"></i>
+                </div>
+                <h4 class="fw-bold mb-2">I am a Doctor</h4>
+                <p class="text-muted small mb-4">
+                    Manage your clinical schedule, review patient appointments, manage patient-provided records, and write consultation notes.
+                </p>
+                <div class="mt-auto">
+                    <a href="{% url 'doctor_register' %}" class="btn btn-outline-success w-100 py-2 fw-semibold">
+                        <i class="bi bi-arrow-right-circle me-1"></i> Register as Doctor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <p class="text-muted small">
+            Already have an account? <a href="{% url 'login' %}" class="text-primary fw-semibold">Sign in here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Manage Appointments - MediConnect Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-lg-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Global Consultations Monitoring</h2>
+      <p class="text-muted mb-0">Overview of all appointments across patients and clinical specialists.</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+  </div>
+
+  <!-- Filter Card -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+      <form method="get" class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by patient, doctor, or specialty...">
+        </div>
+        <div class="col-md-3">
+          <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for s_val, s_name in Status.choices %}
+              <option value="{{ s_val }}" {% if status_filter == s_val %}selected{% endif %}>{{ s_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter me-1"></i> Filter</button>
+          {% if query or status_filter %}
+            <a href="{% url 'admin_appointments' %}" class="btn btn-outline-secondary">Clear</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Doctor & Specialization</th>
+            <th>Date & Time</th>
+            <th>Status</th>
+            <th>Reason</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in page_obj %}
+          <tr>
+            <td>#{{ appt.id }}</td>
+            <td>
+              <div class="fw-semibold">{{ appt.patient.get_full_name|default:appt.patient.username }}</div>
+              <small class="text-muted">{{ appt.patient.email }}</small>
+            </td>
+            <td>
+              <div class="fw-semibold">Dr. {{ appt.doctor.user.get_full_name }}</div>
+              <small class="text-muted">{{ appt.doctor.specialization }}</small>
+            </td>
+            <td>
+              <div class="fw-semibold">{{ appt.appointment_date }}</div>
+              <small class="text-muted">{{ appt.start_time|time:"H:i" }} – {{ appt.end_time|time:"H:i" }}</small>
+            </td>
+            <td>
+              {% if appt.status == 'PENDING' %}<span class="badge bg-warning text-dark">Pending</span>
+              {% elif appt.status == 'CONFIRMED' %}<span class="badge bg-success">Confirmed</span>
+              {% elif appt.status == 'COMPLETED' %}<span class="badge bg-info text-dark">Completed</span>
+              {% elif appt.status == 'CANCELLED' %}<span class="badge bg-danger">Cancelled</span>
+              {% elif appt.status == 'REJECTED' %}<span class="badge bg-secondary">Rejected</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ appt.reason|truncatewords:6|default:"—" }}</small></td>
+            <td class="text-muted small">{{ appt.created_at|date:"M d, H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted">No appointments found matching filters.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white d-flex justify-content-center py-3">
+      <nav>
+        <ul class="pagination mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a></li>
+          {% endif %}
+          <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

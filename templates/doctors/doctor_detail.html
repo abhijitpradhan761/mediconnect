@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Dr. {{ doctor.user.get_full_name }} - MediConnect{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <!-- Left: Doctor Profile Card -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm text-center p-4">
+        {% if doctor.profile_photo %}
+          <img src="{{ doctor.profile_photo.url }}" class="rounded-circle mx-auto mb-3" width="120" height="120" style="object-fit:cover;" alt="Dr {{ doctor.user.get_full_name }}">
+        {% else %}
+          <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center mx-auto mb-3" style="width:120px;height:120px;font-size:3rem;">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+        {% endif %}
+        <h4 class="fw-bold mb-1">Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h4>
+        <span class="badge bg-primary mb-2">{{ doctor.specialization }}</span>
+        <p class="text-muted small mb-1"><i class="bi bi-award me-1"></i>{{ doctor.qualification }}</p>
+        <p class="text-muted small mb-1"><i class="bi bi-briefcase me-1"></i>{{ doctor.experience_years }} yrs experience</p>
+        <p class="text-success fw-bold mb-3">${{ doctor.consultation_fee }} / visit</p>
+        {% if doctor.bio %}
+          <p class="text-muted small">{{ doctor.bio }}</p>
+        {% endif %}
+        {% if user.is_authenticated and user.is_patient %}
+          <a href="{% url 'book_appointment' doctor.pk %}" class="btn btn-primary mt-2 w-100">
+            <i class="bi bi-calendar-plus me-1"></i> Book Appointment
+          </a>
+        {% elif not user.is_authenticated %}
+          <a href="{% url 'login' %}" class="btn btn-outline-primary mt-2 w-100">Sign in to Book</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right: Availability -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-calendar3 text-primary me-2"></i>Weekly Availability</h5>
+        </div>
+        <div class="card-body">
+          {% if availabilities %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Day</th>
+                    <th>Hours</th>
+                    <th>Slot Duration</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for avail in availabilities %}
+                  <tr>
+                    <td class="fw-semibold">{{ avail.get_day_of_week_display }}</td>
+                    <td>{{ avail.start_time|time:"H:i" }} – {{ avail.end_time|time:"H:i" }}</td>
+                    <td>{{ avail.slot_duration_minutes }} min slots</td>
+                    <td><span class="badge bg-success">Available</span></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-4 text-muted">
+              <i class="bi bi-calendar-x" style="font-size:2rem;"></i>
+              <p class="mt-2 mb-0">No availability set yet. Check back soon.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

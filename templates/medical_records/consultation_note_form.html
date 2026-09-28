@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Consultation Note - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-journal-medical text-primary me-2"></i>{{ action }} Clinical Consultation Note
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <!-- Consultation Context -->
+          <div class="p-3 bg-light rounded border mb-4">
+            <div class="row g-2 small">
+              <div class="col-sm-6">
+                <strong>Patient:</strong> {{ appointment.patient.get_full_name|default:appointment.patient.username }}
+              </div>
+              <div class="col-sm-6">
+                <strong>Date:</strong> {{ appointment.appointment_date }} ({{ appointment.start_time|time:"H:i" }})
+              </div>
+              <div class="col-12">
+                <strong>Reported Reason:</strong> {{ appointment.reason|default:"General consultation" }}
+              </div>
+            </div>
+          </div>
+
+          <div class="medical-disclaimer-banner mb-4">
+            <i class="bi bi-shield-exclamation me-1"></i>
+            <strong>Clinical Responsibility Notice:</strong> Consultation notes document clinical observations and agreed follow-up plans. All clinical care decisions remain the professional responsibility of the licensed practitioner.
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger small">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Clinical Observations & Consultation Summary *</label>
+              {{ form.clinical_observations }}
+              {% if form.clinical_observations.errors %}
+                <div class="text-danger small mt-1">{{ form.clinical_observations.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Follow-Up Instructions / Care Directions</label>
+              {{ form.follow_up_instructions }}
+              <div class="form-text small">Specific actions the patient should take (e.g., schedule diagnostic lab, lifestyle guidance).</div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Recommended Follow-up Date (Optional)</label>
+              {{ form.follow_up_date }}
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary fw-semibold">
+                <i class="bi bi-save me-1"></i> Save Consultation Note
+              </button>
+              <a href="{% url 'doctor_appointment_detail' appointment.pk %}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

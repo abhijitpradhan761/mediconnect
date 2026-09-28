@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Manage Appointment - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-calendar-check text-primary me-2"></i>Manage Consultation</h5>
+          <a href="{% url 'doctor_appointments' %}" class="btn btn-sm btn-outline-secondary">← Back to Appointments</a>
+        </div>
+        <div class="card-body p-4">
+          <!-- Patient & Appointment Info -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Patient Name</small>
+              <div class="fw-semibold fs-5">{{ appointment.patient.get_full_name|default:appointment.patient.username }}</div>
+              <div class="text-muted small"><i class="bi bi-envelope me-1"></i>{{ appointment.patient.email }}</div>
+              <div class="text-muted small"><i class="bi bi-telephone me-1"></i>{{ appointment.patient.phone_number|default:"No phone recorded" }}</div>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Current Status</small>
+              <div>
+                {% if appointment.status == 'PENDING' %}
+                  <span class="badge bg-warning text-dark fs-6">Pending Review</span>
+                {% elif appointment.status == 'CONFIRMED' %}
+                  <span class="badge bg-success fs-6">Confirmed</span>
+                {% elif appointment.status == 'COMPLETED' %}
+                  <span class="badge bg-info text-dark fs-6">Completed</span>
+                {% elif appointment.status == 'CANCELLED' %}
+                  <span class="badge bg-danger fs-6">Cancelled</span>
+                {% elif appointment.status == 'REJECTED' %}
+                  <span class="badge bg-secondary fs-6">Rejected</span>
+                {% endif %}
+              </div>
+              <div class="mt-2 text-muted small">
+                <i class="bi bi-clock me-1"></i>Booked: {{ appointment.created_at|date:"M d, Y H:i" }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Appointment Date</small>
+              <div class="fw-semibold">{{ appointment.appointment_date }}</div>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Time Window</small>
+              <div class="fw-semibold">{{ appointment.start_time|time:"H:i" }} – {{ appointment.end_time|time:"H:i" }}</div>
+            </div>
+
+            <div class="col-12">
+              <small class="text-muted text-uppercase fw-bold">Reason for Consultation</small>
+              <div class="p-3 bg-light rounded border text-secondary">
+                {{ appointment.reason|default:"No specific reason provided by patient." }}
+              </div>
+            </div>
+
+            {% if appointment.doctor_notes %}
+            <div class="col-12">
+              <small class="text-muted text-uppercase fw-bold">Saved Doctor Notes</small>
+              <div class="p-3 bg-light-subtle rounded border">
+                {{ appointment.doctor_notes }}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Status Action Forms -->
+          {% if appointment.status == 'PENDING' %}
+            <div class="border-top pt-3">
+              <h6 class="fw-bold mb-3">Consultation Actions</h6>
+              <div class="d-flex gap-2 flex-wrap">
+                <form method="post" action="{% url 'update_appointment_status' appointment.pk %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="CONFIRMED">
+                  <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle me-1"></i> Accept & Confirm
+                  </button>
+                </form>
+
+                <form method="post" action="{% url 'update_appointment_status' appointment.pk %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="REJECTED">
+                  <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Reject this appointment request?')">
+                    <i class="bi bi-x-circle me-1"></i> Reject Request
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% elif appointment.status == 'CONFIRMED' %}
+            <div class="border-top pt-3">
+              <h6 class="fw-bold mb-3">Consultation Progress & Clinical Notes</h6>
+              <form method="post" action="{% url 'update_appointment_status' appointment.pk %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Clinical Observation / Notes</label>
+                  <textarea name="doctor_notes" class="form-control" rows="3" placeholder="Enter clinical notes, recommendations, or observations...">{{ appointment.doctor_notes }}</textarea>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" name="status" value="COMPLETED" class="btn btn-primary">
+                    <i class="bi bi-check2-all me-1"></i> Mark as Completed
+                  </button>
+                  <button type="submit" name="status" value="CANCELLED" class="btn btn-outline-danger" onclick="return confirm('Cancel this confirmed appointment?')">
+                    <i class="bi bi-slash-circle me-1"></i> Cancel Appointment
+                  </button>
+                </div>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

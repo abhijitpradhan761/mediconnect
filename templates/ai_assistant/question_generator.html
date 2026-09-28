@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Doctor Questions - MediConnect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-1">Doctor Consultation Questions</h2>
+          <p class="text-muted mb-0">Prepare thoughtful questions for your upcoming medical appointment.</p>
+        </div>
+        <a href="{% url 'ai_assistant_home' %}" class="btn btn-sm btn-outline-secondary">← AI Tools</a>
+      </div>
+
+      <div class="medical-disclaimer-banner mb-4">
+        <i class="bi bi-shield-exclamation me-1"></i>
+        <strong>Educational Assistance:</strong> These questions are intended to help you actively participate in your clinical care discussions.
+      </div>
+
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold">{{ form.symptoms.label }} *</label>
+              {{ form.symptoms }}
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ form.appointment_reason.label }}</label>
+              {{ form.appointment_reason }}
+            </div>
+
+            <button type="submit" class="btn btn-info text-dark fw-semibold">
+              <i class="bi bi-lightbulb me-1"></i> Generate Questions
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% if result %}
+      <div class="card border-0 shadow-sm border-start border-info border-4 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0 text-info">
+            <i class="bi bi-patch-question me-2"></i>Questions to Bring to Your Consultation
+          </h5>
+          <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('ai-questions-text').innerText); alert('Questions copied to clipboard!');">
+            <i class="bi bi-copy me-1"></i> Copy
+          </button>
+        </div>
+        <div class="card-body p-4" id="ai-questions-text">
+          <div class="p-3 bg-light rounded text-dark lh-lg" style="white-space: pre-wrap;">{{ result }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-5">
+        <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4 p-md-5">
                     <div class="text-center mb-4">
@@ -13,25 +13,35 @@
                             <i class="bi bi-shield-lock-fill fs-2"></i>
                         </div>
                         <h3 class="fw-bold">Sign In to MediConnect</h3>
-                        <p class="text-muted small">Access your patient records, clinical schedule, or administration panel.</p>
+                        <p class="text-muted small">Access your patient records, clinical schedule, or administrator console.</p>
                     </div>
 
-                    {% if form.errors %}
-                        <div class="alert alert-danger py-2 small" role="alert">
-                            <i class="bi bi-exclamation-circle me-1"></i> Your username and password did not match. Please try again.
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small mb-3">
+                            {% for error in form.non_field_errors %}
+                                <div><i class="bi bi-exclamation-circle me-1"></i> {{ error }}</div>
+                            {% endfor %}
                         </div>
                     {% endif %}
 
                     <form method="post" action="{% url 'login' %}">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="id_username" class="form-label fw-semibold">Username or Email</label>
-                            <input type="text" name="username" class="form-control" id="id_username" required autofocus placeholder="Enter your username">
+                            <label for="id_username_or_email" class="form-label fw-semibold">Username or Email Address</label>
+                            {{ form.username_or_email }}
+                            {% if form.username_or_email.errors %}
+                                <div class="text-danger small mt-1">{{ form.username_or_email.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-4">
-                            <label for="id_password" class="form-label fw-semibold">Password</label>
-                            <input type="password" name="password" class="form-control" id="id_password" required placeholder="••••••••">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="id_password" class="form-label fw-semibold mb-0">Password</label>
+                            </div>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
@@ -39,9 +49,10 @@
                         </button>
                     </form>
 
-                    <div class="text-center mt-4">
+                    <div class="text-center mt-4 border-top pt-3">
                         <p class="text-muted small mb-0">
-                            Don't have an account? <a href="{% url 'register' %}" class="text-primary fw-semibold">Register as a Patient</a>
+                            Don't have an account? 
+                            <a href="{% url 'register' %}" class="text-primary fw-semibold">Register as Patient or Doctor</a>
                         </p>
                     </div>
                 </div>

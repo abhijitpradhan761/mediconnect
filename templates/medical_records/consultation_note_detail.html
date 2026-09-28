@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Consultation Note - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-journal-medical text-primary me-2"></i>Consultation Note
+          </h5>
+          <a href="{% url 'appointment_detail' note.appointment.pk %}" class="btn btn-sm btn-outline-secondary">← Back to Appointment</a>
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Attending Doctor</small>
+              <div class="fw-semibold fs-5">Dr. {{ note.doctor.user.get_full_name }}</div>
+              <div class="text-muted small">{{ note.doctor.specialization }}</div>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Patient</small>
+              <div class="fw-semibold fs-5">{{ note.appointment.patient.get_full_name|default:note.appointment.patient.username }}</div>
+              <div class="text-muted small">Consultation on {{ note.appointment.appointment_date }}</div>
+            </div>
+
+            <div class="col-12 mt-3">
+              <small class="text-muted text-uppercase fw-bold">Clinical Observations</small>
+              <div class="p-3 bg-light rounded border text-dark mt-1">
+                {{ note.clinical_observations|linebreaks }}
+              </div>
+            </div>
+
+            {% if note.follow_up_instructions %}
+            <div class="col-12 mt-3">
+              <small class="text-muted text-uppercase fw-bold">Follow-Up Instructions</small>
+              <div class="p-3 bg-info-subtle rounded border text-dark mt-1">
+                {{ note.follow_up_instructions|linebreaks }}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if note.follow_up_date %}
+            <div class="col-md-6 mt-3">
+              <small class="text-muted text-uppercase fw-bold">Recommended Follow-Up Date</small>
+              <div class="fw-semibold text-primary fs-6">{{ note.follow_up_date }}</div>
+            </div>
+            {% endif %}
+
+            <div class="col-12 mt-4">
+              <div class="medical-disclaimer-banner">
+                <i class="bi bi-shield-exclamation me-1"></i>
+                <strong>Notice:</strong> This consultation note is part of your medical history on MediConnect. If you experience worsening symptoms or acute changes, seek immediate emergency medical evaluation.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

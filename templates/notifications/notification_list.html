@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Notifications - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Notification Center</h2>
+      <p class="text-muted mb-0">Updates regarding your appointments, credentials, and medical records.</p>
+    </div>
+    {% if unread_count > 0 %}
+      <form method="post" action="{% url 'mark_all_notifications_read' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-check2-all me-1"></i> Mark All as Read
+        </button>
+      </form>
+    {% endif %}
+  </div>
+
+  {% if notifications %}
+    <div class="card border-0 shadow-sm">
+      <div class="list-group list-group-flush">
+        {% for notif in notifications %}
+          <div class="list-group-item p-3 {% if not notif.is_read %}bg-light-subtle border-start border-primary border-4{% endif %}">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div class="d-flex align-items-start gap-3">
+                <div class="p-2 rounded-circle mt-1 
+                  {% if notif.notification_type == 'APPOINTMENT_CONFIRMED' or notif.notification_type == 'DOCTOR_APPROVED' %}bg-success-subtle text-success
+                  {% elif notif.notification_type == 'APPOINTMENT_CANCELLED' or notif.notification_type == 'APPOINTMENT_REJECTED' %}bg-danger-subtle text-danger
+                  {% elif notif.notification_type == 'APPOINTMENT_REMINDER' %}bg-warning-subtle text-warning
+                  {% else %}bg-primary-subtle text-primary{% endif %}">
+                  <i class="bi 
+                    {% if notif.notification_type == 'APPOINTMENT_CONFIRMED' %}bi-check-circle-fill
+                    {% elif notif.notification_type == 'APPOINTMENT_CANCELLED' or notif.notification_type == 'APPOINTMENT_REJECTED' %}bi-x-circle-fill
+                    {% elif notif.notification_type == 'APPOINTMENT_REMINDER' %}bi-clock-fill
+                    {% elif notif.notification_type == 'DOCTOR_APPROVED' %}bi-patch-check-fill
+                    {% elif notif.notification_type == 'DOCUMENT_UPLOADED' %}bi-file-earmark-medical-fill
+                    {% else %}bi-bell-fill{% endif %} fs-5"></i>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <h6 class="fw-bold mb-0">{{ notif.title }}</h6>
+                    {% if not notif.is_read %}
+                      <span class="badge bg-primary rounded-pill small">New</span>
+                    {% endif %}
+                  </div>
+                  <p class="text-secondary small mb-1">{{ notif.message }}</p>
+                  <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ notif.created_at|timesince }} ago</small>
+                </div>
+              </div>
+
+              {% if not notif.is_read %}
+                <form method="post" action="{% url 'mark_notification_read' notif.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-link text-decoration-none text-muted" title="Mark as read">
+                    <i class="bi bi-check2"></i>
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-bell-slash text-muted" style="font-size:3.5rem;"></i>
+      <h5 class="mt-3 text-muted">No notifications right now</h5>
+      <p class="text-muted small">You are all caught up with your healthcare updates.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

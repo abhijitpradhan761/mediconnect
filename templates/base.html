@@ -33,16 +33,71 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i> Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}#about"><i class="bi bi-info-circle me-1"></i> About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}#services"><i class="bi bi-gear-wide-connected me-1"></i> Services</a>
-                    </li>
+
+                    {% if user.is_authenticated %}
+                        {% if user.is_patient %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'doctor_list' %}"><i class="bi bi-search me-1"></i> Find Doctors</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'patient_appointments' %}"><i class="bi bi-calendar-check me-1"></i> Appointments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'patient_documents' %}"><i class="bi bi-file-earmark-medical me-1"></i> Records</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-semibold" href="{% url 'ai_assistant_home' %}"><i class="bi bi-robot me-1"></i> AI Assistant</a>
+                            </li>
+                        {% elif user.is_doctor %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'doctor_appointments' %}"><i class="bi bi-calendar-check me-1"></i> Consultations</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'doctor_availability' %}"><i class="bi bi-sliders me-1"></i> My Availability</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'doctor_patient_docs' %}"><i class="bi bi-folder2-open me-1"></i> Patient Records</a>
+                            </li>
+                        {% elif user.is_administrator %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_patients' %}"><i class="bi bi-people me-1"></i> Patients</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_doctors' %}"><i class="bi bi-person-badge me-1"></i> Doctors</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_appointments' %}"><i class="bi bi-calendar2-range me-1"></i> Appointments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin_reports' %}"><i class="bi bi-pie-chart me-1"></i> Reports</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'doctor_list' %}"><i class="bi bi-search me-1"></i> Find Doctors</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#about"><i class="bi bi-info-circle me-1"></i> About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#services"><i class="bi bi-gear-wide-connected me-1"></i> Services</a>
+                        </li>
+                    {% endif %}
                 </ul>
 
                 <div class="d-flex align-items-center gap-2">
                     {% if user.is_authenticated %}
+                        <!-- Notification Bell with dynamic unread badge -->
+                        <a href="{% url 'notifications_list' %}" class="btn btn-outline-secondary position-relative me-2" title="Notifications">
+                            <i class="bi bi-bell-fill"></i>
+                            <span id="unread-notif-pill" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                0
+                            </span>
+                        </a>
+
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle fs-5"></i>
@@ -62,6 +117,11 @@
                                 <li>
                                     <a class="dropdown-item" href="{% url 'dashboard_redirect' %}">
                                         <i class="bi bi-speedometer2 me-2"></i> My Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'notifications_list' %}">
+                                        <i class="bi bi-bell me-2"></i> Notifications
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>

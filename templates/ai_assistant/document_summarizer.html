@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Medical Document Summarizer - MediConnect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-1">Medical Report Summarizer</h2>
+          <p class="text-muted mb-0">Demystify diagnostic jargon and prepare questions for your doctor.</p>
+        </div>
+        <a href="{% url 'ai_assistant_home' %}" class="btn btn-sm btn-outline-secondary">← AI Tools</a>
+      </div>
+
+      <div class="medical-disclaimer-banner mb-4">
+        <i class="bi bi-shield-exclamation me-1"></i>
+        <strong>Educational Purpose Only:</strong> This summarizer clarifies terminology. It does not provide medical diagnosis or replace a professional clinical reading.
+      </div>
+
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ form.document_text.label }} *</label>
+              {{ form.document_text }}
+              <div class="form-text small">{{ form.document_text.help_text }}</div>
+            </div>
+
+            <button type="submit" class="btn btn-secondary fw-semibold">
+              <i class="bi bi-file-text me-1"></i> Summarize in Plain English
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% if result %}
+      <div class="card border-0 shadow-sm border-start border-secondary border-4 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0 text-secondary">
+            <i class="bi bi-file-earmark-check me-2"></i>Plain-Language Report Summary
+          </h5>
+          <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(document.getElementById('ai-doc-text').innerText); alert('Summary copied to clipboard!');">
+            <i class="bi bi-copy me-1"></i> Copy
+          </button>
+        </div>
+        <div class="card-body p-4" id="ai-doc-text">
+          <div class="p-3 bg-light rounded text-dark lh-lg" style="white-space: pre-wrap;">{{ result }}</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

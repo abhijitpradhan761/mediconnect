@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Patient Appointments - MediConnect{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Appointment Requests</h2>
+    <div class="d-flex gap-2">
+      {% for s_value, s_label in Status.choices %}
+        <a href="?status={{ s_value }}" class="btn btn-sm {% if status_filter == s_value %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+          {{ s_label }}
+        </a>
+      {% endfor %}
+      <a href="?" class="btn btn-sm btn-outline-secondary">All</a>
+    </div>
+  </div>
+
+  {% if appointments %}
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Patient</th>
+              <th>Date & Time</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appt in appointments %}
+            <tr>
+              <td>
+                <div class="fw-semibold small">{{ appt.patient.get_full_name }}</div>
+                <div class="text-muted x-small">{{ appt.patient.email }}</div>
+              </td>
+              <td>
+                <div class="fw-semibold">{{ appt.appointment_date }}</div>
+                <div class="text-muted small">{{ appt.start_time|time:"H:i" }}</div>
+              </td>
+              <td><span class="text-muted small">{{ appt.reason|truncatewords:8|default:"—" }}</span></td>
+              <td>
+                {% if appt.status == 'PENDING' %}<span class="badge bg-warning text-dark">Pending</span>
+                {% elif appt.status == 'CONFIRMED' %}<span class="badge bg-success">Confirmed</span>
+                {% elif appt.status == 'COMPLETED' %}<span class="badge bg-info text-dark">Completed</span>
+                {% elif appt.status == 'CANCELLED' %}<span class="badge bg-danger">Cancelled</span>
+                {% elif appt.status == 'REJECTED' %}<span class="badge bg-secondary">Rejected</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'doctor_appointment_detail' appt.pk %}" class="btn btn-sm btn-outline-primary">Manage</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-calendar-x text-muted" style="font-size:3rem;"></i>
+      <h5 class="mt-3 text-muted">No appointments found</h5>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

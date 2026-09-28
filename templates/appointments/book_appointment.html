@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment - MediConnect{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const dateInput = document.getElementById('id_appointment_date');
+  const slotSelect = document.getElementById('id_slot_time');
+  const slotsContainer = document.getElementById('slots-container');
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const doctorId = "{{ doctor.pk }}";
+
+  function loadSlots(dateValue) {
+    if (!dateValue) return;
+    loadingSpinner.style.display = 'block';
+    slotsContainer.style.display = 'none';
+    fetch(`/api/doctors/${doctorId}/slots/?date=${dateValue}`)
+      .then(r => r.json())
+      .then(data => {
+        slotSelect.innerHTML = '';
+        if (data.slots && data.slots.length > 0) {
+          let hasAvail = false;
+          data.slots.forEach(s => {
+            if (s.available) {
+              hasAvail = true;
+              const opt = document.createElement('option');
+              opt.value = s.time;
+              opt.textContent = s.time;
+              slotSelect.appendChild(opt);
+            }
+          });
+          if (!hasAvail) {
+            slotSelect.innerHTML = '<option value="">No slots available on this day</option>';
+          }
+        } else {
+          slotSelect.innerHTML = '<option value="">Doctor is not available on this day</option>';
+        }
+        loadingSpinner.style.display = 'none';
+        slotsContainer.style.display = 'block';
+      })
+      .catch(() => {
+        slotSelect.innerHTML = '<option value="">Error loading slots. Try again.</option>';
+        loadingSpinner.style.display = 'none';
+        slotsContainer.style.display = 'block';
+      });
+  }
+
+  dateInput.addEventListener('change', function() {
+    loadSlots(this.value);
+  });
+
+  // If date is prefilled (page reload after POST error), load slots
+  if (dateInput.value) {
+    loadSlots(dateInput.value);
+  }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <!-- Doctor Summary -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body d-flex align-items-center gap-3 p-4">
+          <div class="p-3 bg-success-subtle text-success rounded-circle fs-3">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-0">Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h5>
+            <p class="text-muted small mb-0">{{ doctor.specialization }} · {{ doctor.qualification }}</p>
+            <p class="text-success fw-bold mb-0 small">${{ doctor.consultation_fee }} per visit</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking Form -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-calendar-plus text-primary me-2"></i>Select Date & Time</h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger small">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Appointment Date *</label>
+              {{ form.appointment_date }}
+              {% if form.appointment_date.errors %}
+                <div class="text-danger small mt-1">{{ form.appointment_date.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text small">Select a date to load available slots.</div>
+            </div>
+
+            <!-- Loading spinner -->
+            <div id="loading-spinner" style="display:none;" class="text-center py-3">
+              <div class="spinner-border text-primary spinner-border-sm me-2"></div>
+              <span class="text-muted small">Loading available slots...</span>
+            </div>
+
+            <!-- Slots dropdown -->
+            <div id="slots-container" style="{% if not slots %}display:none;{% endif %}" class="mb-4">
+              <label class="form-label fw-semibold">Available Time Slot *</label>
+              {{ form.slot_time }}
+              {% if form.slot_time.errors %}
+                <div class="text-danger small mt-1">{{ form.slot_time.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Reason for Visit</label>
+              {{ form.reason }}
+            </div>
+
+            <button type="submit" class="btn btn-primary fw-semibold w-100 py-2">
+              <i class="bi bi-calendar-check me-1"></i> Confirm Booking
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

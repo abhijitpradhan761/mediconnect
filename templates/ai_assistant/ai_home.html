@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Responsible AI Health Assistant - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center mb-4">
+    <div class="col-lg-10">
+      <!-- Responsible AI Disclaimer Banner -->
+      <div class="alert alert-warning border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex align-items-start gap-3">
+          <i class="bi bi-shield-exclamation fs-2 text-warning"></i>
+          <div>
+            <h5 class="fw-bold mb-1">Responsible AI Health Disclaimer</h5>
+            <p class="mb-0 small text-dark">
+              MediConnect AI tools are designed exclusively for <strong>patient preparation, symptom structuring, and educational organization</strong>.
+              The AI does <strong>NOT</strong> diagnose medical illnesses, does <strong>NOT</strong> recommend pharmaceutical medications or dosages,
+              and does <strong>NOT</strong> replace evaluation by a licensed healthcare professional.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mb-5">
+        <h2 class="fw-bold mb-2">AI-Powered Consultation Preparation</h2>
+        <p class="text-muted">Tools to help you articulate symptoms clearly and maximize your doctor visit.</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Feature 1 -->
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm p-4 text-center">
+            <div class="mb-3 text-primary">
+              <i class="bi bi-list-check display-4"></i>
+            </div>
+            <h5 class="fw-bold mb-2">Symptom Organizer</h5>
+            <p class="text-muted small mb-4">
+              Structure your timeline, severity, triggers, and discomforts into a clean clinical brief for your doctor.
+            </p>
+            <div class="mt-auto">
+              <a href="{% url 'ai_symptom_organizer' %}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-arrow-right-circle me-1"></i> Organize Symptoms
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm p-4 text-center">
+            <div class="mb-3 text-info">
+              <i class="bi bi-question-circle display-4"></i>
+            </div>
+            <h5 class="fw-bold mb-2">Doctor Questions</h5>
+            <p class="text-muted small mb-4">
+              Generate insightful, empowering questions to ask during your consultation so nothing is missed.
+            </p>
+            <div class="mt-auto">
+              <a href="{% url 'ai_question_generator' %}" class="btn btn-outline-info text-dark w-100">
+                <i class="bi bi-arrow-right-circle me-1"></i> Generate Questions
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm p-4 text-center">
+            <div class="mb-3 text-secondary">
+              <i class="bi bi-file-earmark-text display-4"></i>
+            </div>
+            <h5 class="fw-bold mb-2">Report Summarizer</h5>
+            <p class="text-muted small mb-4">
+              Translate complex diagnostic report terminology into plain English and know what questions to ask.
+            </p>
+            <div class="mt-auto">
+              <a href="{% url 'ai_document_summarizer' %}" class="btn btn-outline-secondary w-100">
+                <i class="bi bi-arrow-right-circle me-1"></i> Summarize Text
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

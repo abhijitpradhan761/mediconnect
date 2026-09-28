@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ document.title }} - MediConnect{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-file-earmark-medical text-primary me-2"></i>Document Details
+          </h5>
+          {% if is_owner %}
+            <a href="{% url 'patient_documents' %}" class="btn btn-sm btn-outline-secondary">← Back to Documents</a>
+          {% else %}
+            <a href="{% url 'doctor_patient_docs' %}" class="btn btn-sm btn-outline-secondary">← Back to Patient Documents</a>
+          {% endif %}
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Document Title</small>
+              <div class="fw-semibold fs-5">{{ document.title }}</div>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Category</small>
+              <div>
+                <span class="badge bg-secondary-subtle text-dark border fs-6">
+                  {{ document.get_document_type_display }}
+                </span>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Patient</small>
+              <div class="fw-semibold">{{ document.patient.get_full_name|default:document.patient.username }}</div>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted text-uppercase fw-bold">Upload Timestamp</small>
+              <div class="fw-semibold">{{ document.uploaded_at|date:"F d, Y H:i" }}</div>
+            </div>
+
+            {% if document.appointment %}
+            <div class="col-12">
+              <small class="text-muted text-uppercase fw-bold">Associated Consultation</small>
+              <div class="p-3 bg-light rounded border">
+                Appointment with Dr. {{ document.appointment.doctor.user.get_full_name }} on {{ document.appointment.appointment_date }}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if document.description %}
+            <div class="col-12">
+              <small class="text-muted text-uppercase fw-bold">Notes / Description</small>
+              <div class="p-3 bg-light rounded border text-secondary">
+                {{ document.description }}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex gap-2">
+            <a href="{% url 'document_download' document.pk %}" class="btn btn-success">
+              <i class="bi bi-download me-1"></i> Secure Download File
+            </a>
+            {% if is_owner %}
+              <form method="post" action="{% url 'document_delete' document.pk %}" class="d-inline"
+                    onsubmit="return confirm('Permanently delete this medical document?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">
+                  <i class="bi bi-trash me-1"></i> Delete
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

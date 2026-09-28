@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Operational Analytics & Reports - MediConnect Admin{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-lg-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Operational Analytics & System Reports</h2>
+      <p class="text-muted mb-0">Platform health metrics, specialization distributions, and consultation volume.</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 text-center">
+        <h4 class="fw-bold text-primary mb-1">{{ total_patients }}</h4>
+        <div class="text-muted small text-uppercase fw-semibold">Total Patients Enrolled</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 text-center">
+        <h4 class="fw-bold text-success mb-1">{{ total_doctors }}</h4>
+        <div class="text-muted small text-uppercase fw-semibold">Total Medical Specialists</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 text-center">
+        <h4 class="fw-bold text-info mb-1">{{ total_appointments }}</h4>
+        <div class="text-muted small text-uppercase fw-semibold">Consultations Logged</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- Chart: Consultation Status Distribution -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white py-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Consultation Status Distribution</h5>
+        </div>
+        <div class="card-body p-4 d-flex align-items-center justify-content-center">
+          <div style="max-width: 380px; width: 100%;">
+            <canvas id="statusPieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table: Doctors by Specialization -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white py-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-diagram-3-fill text-success me-2"></i>Specialists by Department</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Medical Specialization</th>
+                  <th class="text-end">Registered Practitioners</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in specialization_stats %}
+                <tr>
+                  <td class="fw-semibold">{{ item.specialization }}</td>
+                  <td class="text-end">
+                    <span class="badge bg-primary rounded-pill">{{ item.doctor_count }}</span>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="2" class="text-center py-4 text-muted">No specialists recorded yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ctx = document.getElementById('statusPieChart');
+  if (ctx) {
+    const labels = {{ status_labels_json|safe }};
+    const counts = {{ status_counts_json|safe }};
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: counts,
+          backgroundColor: [
+            '#ffc107', // PENDING (warning)
+            '#198754', // CONFIRMED (success)
+            '#0dcaf0', // COMPLETED (info)
+            '#dc3545', // CANCELLED (danger)
+            '#6c757d', // REJECTED (secondary)
+          ],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

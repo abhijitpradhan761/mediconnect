@@ -1,10 +1,12 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('register/', views.register_view, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    # Frontend Authentication & Registration
+    path('register/', views.register_choice_view, name='register'),
+    path('register/patient/', views.patient_register_view, name='patient_register'),
+    path('register/doctor/', views.doctor_register_view, name='doctor_register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('dashboard/redirect/', views.dashboard_redirect_view, name='dashboard_redirect'),
 ]
