@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div>
             <h5 class="fw-bold mb-0">Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h5>
             <p class="text-muted small mb-0">{{ doctor.specialization }} · {{ doctor.qualification }}</p>
-            <p class="text-success fw-bold mb-0 small">${{ doctor.consultation_fee }} per visit</p>
+            <p class="text-success fw-bold mb-0 small">₹{{ doctor.consultation_fee }} per visit</p>
           </div>
         </div>
       </div>

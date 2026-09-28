@@ -45,7 +45,7 @@
             <th>Specialization</th>
             <th>License Number</th>
             <th>Experience</th>
-            <th>Consultation Fee</th>
+            <th>Consultation Fee (₹)</th>
             <th>Verification Status</th>
             <th class="text-end">Verification Actions</th>
           </tr>
@@ -60,7 +60,7 @@
             <td><span class="badge bg-primary-subtle text-primary">{{ doc.specialization }}</span></td>
             <td><code class="text-dark">{{ doc.license_number }}</code></td>
             <td>{{ doc.experience_years }} yrs</td>
-            <td class="text-success fw-semibold">${{ doc.consultation_fee }}</td>
+            <td class="text-success fw-semibold">₹{{ doc.consultation_fee }}</td>
             <td>
               {% if doc.is_approved %}
                 <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Approved</span>

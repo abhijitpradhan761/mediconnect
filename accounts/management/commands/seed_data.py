@@ -41,12 +41,15 @@ class Command(BaseCommand):
             username='dr_smith',
             defaults={
                 'email': 'smith@mediconnect.org',
-                'first_name': 'Marcus',
-                'last_name': 'Smith',
+                'first_name': 'Abhijit',
+                'last_name': 'Pradhan',
                 'role': User.Role.DOCTOR,
                 'phone_number': '+1-555-0101',
             }
         )
+        # Keep the demo account's display name current when seed_data is rerun.
+        doc1_user.first_name = 'Abhijit'
+        doc1_user.last_name = 'Pradhan'
         doc1_user.set_password('DoctorPassword123!')
         doc1_user.save()
 
@@ -146,7 +149,83 @@ class Command(BaseCommand):
             }
         )
 
-        # 5. Patient 1: Alice Walker
+        # 5. Additional doctor demo accounts. These stay pending until an admin
+        # verifies each doctor's qualifications and registration details.
+        additional_doctors = [
+            {
+                'username': 'dr_debabrata_das_mohapatra',
+                'first_name': 'Debabrata Das',
+                'last_name': 'Mohapatra',
+                'specialization': 'General Medicine',
+                'license_number': 'DEMO-PENDING-DEBABRATA-MOHAPATRA',
+            },
+            {
+                'username': 'dr_matrujyoti_nath',
+                'first_name': 'Matrujyoti',
+                'last_name': 'Nath',
+                'specialization': 'Pediatrics',
+                'license_number': 'DEMO-PENDING-MATRUJYOTI-NATH',
+            },
+            {
+                'username': 'dr_rabindra_dalai',
+                'first_name': 'Rabindra',
+                'last_name': 'Dalai',
+                'specialization': 'Orthopedics',
+                'license_number': 'DEMO-PENDING-RABINDRA-DALAI',
+            },
+            {
+                'username': 'dr_bhakti_ranjan_das',
+                'first_name': 'Bhakti Ranjan',
+                'last_name': 'Das',
+                'specialization': 'Obstetrics & Gynecology',
+                'license_number': 'DEMO-PENDING-BHAKTI-RANJAN-DAS',
+            },
+            {
+                'username': 'dr_bibhudatta_mallick',
+                'first_name': 'Bibhudatta',
+                'last_name': 'Mallick',
+                'specialization': 'Dermatology',
+                'license_number': 'DEMO-PENDING-BIBHUDATTA-MALLICK',
+            },
+            {
+                'username': 'dr_debasish_mallick',
+                'first_name': 'Debasish',
+                'last_name': 'Mallick',
+                'specialization': 'Cardiology',
+                'license_number': 'DEMO-PENDING-DEBASISH-MALLICK',
+            },
+        ]
+
+        for doctor in additional_doctors:
+            doctor_user, _ = User.objects.get_or_create(
+                username=doctor['username'],
+                defaults={
+                    'email': f"{doctor['username']}@mediconnect.org",
+                    'first_name': doctor['first_name'],
+                    'last_name': doctor['last_name'],
+                    'role': User.Role.DOCTOR,
+                }
+            )
+            doctor_user.first_name = doctor['first_name']
+            doctor_user.last_name = doctor['last_name']
+            doctor_user.role = User.Role.DOCTOR
+            doctor_user.set_password('DoctorPassword123!')
+            doctor_user.save()
+
+            DoctorProfile.objects.get_or_create(
+                user=doctor_user,
+                defaults={
+                    'specialization': doctor['specialization'],
+                    'qualification': 'Pending verification',
+                    'license_number': doctor['license_number'],
+                    'experience_years': 0,
+                    'consultation_fee': 0.00,
+                    'bio': 'Demo profile. Credentials and consultation fee require verification.',
+                    'is_approved': False,
+                }
+            )
+
+        # 6. Patient 1: Alice Walker
         pat1_user, _ = User.objects.get_or_create(
             username='patient_alice',
             defaults={
@@ -172,7 +251,7 @@ class Command(BaseCommand):
             }
         )
 
-        # 6. Patient 2: Bob Taylor
+        # 7. Patient 2: Bob Taylor
         pat2_user, _ = User.objects.get_or_create(
             username='patient_bob',
             defaults={
@@ -195,7 +274,7 @@ class Command(BaseCommand):
             }
         )
 
-        # 7. Sample Appointments
+        # 8. Sample Appointments
         today = timezone.now().date()
         tomorrow = today + datetime.timedelta(days=1)
         next_week = today + datetime.timedelta(days=7)
@@ -238,7 +317,7 @@ class Command(BaseCommand):
             }
         )
 
-        # 8. Sample Medical Documents
+        # 9. Sample Medical Documents
         dummy_pdf = ContentFile(b"%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n%%EOF", name="Comprehensive_Metabolic_Panel.pdf")
         MedicalDocument.objects.get_or_create(
             patient=pat1_user,
@@ -251,13 +330,13 @@ class Command(BaseCommand):
             }
         )
 
-        # 9. In-App Notifications
+        # 10. In-App Notifications
         Notification.objects.get_or_create(
             recipient=pat1_user,
-            title='Appointment Confirmed with Dr. Marcus Smith',
+            title='Appointment Confirmed with Dr. Abhijit Pradhan',
             defaults={
                 'notification_type': Notification.NotificationType.APPOINTMENT_CONFIRMED,
-                'message': f'Your appointment on {tomorrow} at 10:00 AM has been confirmed by Dr. Marcus Smith.',
+                'message': f'Your appointment on {tomorrow} at 10:00 AM has been confirmed by Dr. Abhijit Pradhan.',
                 'is_read': False,
                 'related_appointment_id': appt1.pk,
             }

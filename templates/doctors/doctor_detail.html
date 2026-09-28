@@ -17,7 +17,7 @@
         <span class="badge bg-primary mb-2">{{ doctor.specialization }}</span>
         <p class="text-muted small mb-1"><i class="bi bi-award me-1"></i>{{ doctor.qualification }}</p>
         <p class="text-muted small mb-1"><i class="bi bi-briefcase me-1"></i>{{ doctor.experience_years }} yrs experience</p>
-        <p class="text-success fw-bold mb-3">${{ doctor.consultation_fee }} / visit</p>
+        <p class="text-success fw-bold mb-3">₹{{ doctor.consultation_fee }} / visit</p>
         {% if doctor.bio %}
           <p class="text-muted small">{{ doctor.bio }}</p>
         {% endif %}

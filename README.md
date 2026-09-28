@@ -312,6 +312,12 @@ Running `python manage.py seed_data` populates the database with realistic demon
 | **Doctor** | `dr_smith` | `DoctorPassword123!` | Cardiology specialist, Approved, Mon-Fri slots |
 | **Doctor** | `dr_jones` | `DoctorPassword123!` | Neurology specialist, Approved, Mon/Wed/Fri slots |
 | **Doctor** | `dr_williams` | `DoctorPassword123!` | Dermatology specialist, **Pending Review** |
+| **Doctor** | `dr_debabrata_das_mohapatra` | `DoctorPassword123!` | General Medicine, **Pending credential verification** |
+| **Doctor** | `dr_matrujyoti_nath` | `DoctorPassword123!` | Pediatrics, **Pending credential verification** |
+| **Doctor** | `dr_rabindra_dalai` | `DoctorPassword123!` | Orthopedics, **Pending credential verification** |
+| **Doctor** | `dr_bhakti_ranjan_das` | `DoctorPassword123!` | Obstetrics & Gynecology, **Pending credential verification** |
+| **Doctor** | `dr_bibhudatta_mallick` | `DoctorPassword123!` | Dermatology, **Pending credential verification** |
+| **Doctor** | `dr_debasish_mallick` | `DoctorPassword123!` | Cardiology, **Pending credential verification** |
 | **Patient** | `patient_alice` | `PatientPassword123!` | Has active & completed consultations |
 | **Patient** | `patient_bob` | `PatientPassword123!` | New patient account |
 
