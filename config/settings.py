@@ -23,11 +23,11 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 # Hosts allowed to connect to this application
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS = list(set([
     host.strip()
     for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,web,0.0.0.0').split(',')
     if host.strip()
-]
+] + ['testserver', 'localhost', '127.0.0.1']))
 
 
 # Application definition

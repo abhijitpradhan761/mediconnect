@@ -9,7 +9,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # Web views
-from accounts.views import home_view, login_view, register_choice_view, logout_view
+from accounts.views import (
+    home_view, login_view, register_choice_view,
+    patient_register_view, doctor_register_view, logout_view
+)
 
 # API view imports
 from accounts import api_views as accounts_api
@@ -70,6 +73,8 @@ urlpatterns = [
     # Direct convenient Auth shortcuts
     path('login/', login_view, name='login'),
     path('register/', register_choice_view, name='register'),
+    path('register/patient/', patient_register_view, name='patient_register_direct'),
+    path('register/doctor/', doctor_register_view, name='doctor_register_direct'),
     path('logout/', logout_view, name='logout'),
 
     # Web Applications
