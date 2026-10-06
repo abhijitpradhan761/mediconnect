@@ -8,8 +8,7 @@
 ![Redis](https://img.shields.io/badge/Redis-7.0-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-
-> **Major B.Tech CSE Capstone Project & Portfolio Engineering Showcase**  
+ 
 > A production-style, role-based healthcare management platform connecting **Patients**, **Doctors**, and **Administrators** with real-time appointment scheduling, encrypted medical records, asynchronous background notifications, and responsible AI-powered consultation preparation.
 
 ---
